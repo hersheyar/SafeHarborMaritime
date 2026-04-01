@@ -22,9 +22,18 @@ hamburger && hamburger.addEventListener('click', () => {
 // Close mobile menu when a link is clicked
 mobileMenu && mobileMenu.querySelectorAll('a').forEach(link => {
   link.addEventListener('click', () => {
-    hamburger.classList.remove('open');
-    mobileMenu.classList.remove('open');
-    mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
+    closeMobileMenu();
+  });
+});
+
+// Also close when tapping a summary that has no sub-links (direct nav)
+mobileMenu && mobileMenu.querySelectorAll('summary').forEach(summary => {
+  summary.addEventListener('click', () => {
+    // Only close if this summary's details is already open
+    const details = summary.parentElement;
+    if (details.hasAttribute('open')) {
+      closeMobileMenu();
+    }
   });
 });
 
