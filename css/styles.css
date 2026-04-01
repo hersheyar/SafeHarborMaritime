@@ -447,6 +447,7 @@ h3 { font-size: 1.25rem; font-weight: 700; }
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
+
 @media (min-width: 768px) { .highlights-grid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1024px) { .highlights-grid { grid-template-columns: repeat(4, 1fr); } }
 
@@ -496,6 +497,12 @@ h3 { font-size: 1.25rem; font-weight: 700; }
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
   position: relative;
+}
+
+@media (max-width: 1023px) {
+  .stats-section {
+    display: none;
+  }
 }
 @media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 

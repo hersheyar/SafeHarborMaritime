@@ -68,6 +68,46 @@ if (slideshow) {
   dots.forEach((dot, i) => dot.addEventListener('click', () => showSlide(i)));
 }
 
+// ---- COUNTER ANIMATION ----
+function animateCounter(el, target, duration = 2000) {
+  const start = performance.now();
+  const isPlus = el.textContent.includes('+');
+  const isComma = target >= 1000;
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(eased * target);
+
+    let display = isComma ? current.toLocaleString() : current.toString();
+    if (isPlus) display += '+';
+    el.textContent = display;
+
+    if (progress < 1) requestAnimationFrame(update);
+  }
+
+  requestAnimationFrame(update);
+}
+
+const statsSection = document.querySelector('.stats-section');
+if (statsSection && window.innerWidth >= 1024) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.stat-number').forEach(el => {
+          const raw = el.textContent.replace(/[^0-9]/g, '');
+          const target = parseInt(raw, 10);
+          if (!isNaN(target)) animateCounter(el, target);
+        });
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+
+  observer.observe(statsSection);
+}
+
 // ---- News category filter ----
 const filterBtns = document.querySelectorAll('.filter-btn');
 const newsCards = document.querySelectorAll('.news-card[data-category]');
