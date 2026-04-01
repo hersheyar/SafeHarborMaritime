@@ -30,43 +30,65 @@ document.querySelectorAll('.nav__links a, .nav__dropdown a').forEach(a => {
 });
 
 // ---- Animated counters (TrustSection) ----
-function formatCounterValue(el) {
-  const end = parseInt(el.dataset.end || "0", 10);
-  const suffix = el.dataset.suffix || "";
-  el.textContent = end.toLocaleString() + suffix;
-}
 
-function animateCounter(el) {
-  if (el.dataset.animated === "true") return;
-  el.dataset.animated = "true";
-  const end = parseInt(el.dataset.end || "0", 10);
-  const suffix = el.dataset.suffix || "";
-  const duration = 2000;
-  let start = null;
-  const step = (ts) => {
-    if (!start) start = ts;
-    const progress = Math.min((ts - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 4);
-    el.textContent = Math.floor(ease * end).toLocaleString() + suffix;
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    } else {
-      formatCounterValue(el);
+
+// ---- Slideshow ----
+const slideshow = document.querySelector('.slideshow');
+if (slideshow) {
+  const slides = slideshow.querySelectorAll('.slide');
+  const dots = slideshow.querySelectorAll('.slideshow__dot');
+  let current = 0;
+  // ---- Animated counters (TrustSection) ----
+  document.addEventListener("DOMContentLoaded", () => {
+    const counters = document.querySelectorAll("[data-counter]");
+
+    if (!counters.length) return;
+
+    function formatCounterValue(el) {
+      const end = parseInt(el.dataset.end || "0", 10);
+      const suffix = el.dataset.suffix || "";
+      el.textContent = end.toLocaleString() + suffix;
     }
-  };
-  requestAnimationFrame(step);
-}
 
-const counters = document.querySelectorAll("[data-counter]");
-const disableCounterAnimation =
-    window.matchMedia("(max-width: 768px)").matches ||
-    window.matchMedia("(pointer: coarse)").matches ||
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    function animateCounter(el) {
+      if (el.dataset.animated === "true") return;
+      el.dataset.animated = "true";
 
-if (counters.length) {
-  if (disableCounterAnimation) {
-    counters.forEach(formatCounterValue);
-  } else {
+      const end = parseInt(el.dataset.end || "0", 10);
+      const suffix = el.dataset.suffix || "";
+      const duration = 2000;
+      let start = null;
+
+      const step = (ts) => {
+        if (!start) start = ts;
+
+        const progress = Math.min((ts - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 4);
+
+        el.textContent = Math.floor(ease * end).toLocaleString() + suffix;
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          formatCounterValue(el);
+        }
+      };
+
+      requestAnimationFrame(step);
+    }
+
+    const isSmallScreen = window.innerWidth <= 1024;
+
+    if (isSmallScreen) {
+      counters.forEach(formatCounterValue);
+      return;
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      counters.forEach(formatCounterValue);
+      return;
+    }
+
     const observer = new IntersectionObserver(
         (entries, obs) => {
           entries.forEach((entry) => {
@@ -78,17 +100,9 @@ if (counters.length) {
         },
         { threshold: 0.5 }
     );
+
     counters.forEach((el) => observer.observe(el));
-  }
-}
-
-// ---- Slideshow ----
-const slideshow = document.querySelector('.slideshow');
-if (slideshow) {
-  const slides = slideshow.querySelectorAll('.slide');
-  const dots = slideshow.querySelectorAll('.slideshow__dot');
-  let current = 0;
-
+  });
   function showSlide(idx) {
     slides[current].classList.remove('active');
     dots[current] && dots[current].classList.remove('active');
