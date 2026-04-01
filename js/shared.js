@@ -77,14 +77,12 @@ if (slideshow) {
       requestAnimationFrame(step);
     }
 
-    const isSmallScreen = window.innerWidth <= 1024;
+    const isTouchDevice =
+        window.matchMedia("(pointer: coarse)").matches ||
+        window.matchMedia("(hover: none)").matches ||
+        navigator.maxTouchPoints > 0;
 
-    if (isSmallScreen) {
-      counters.forEach(formatCounterValue);
-      return;
-    }
-
-    if (!("IntersectionObserver" in window)) {
+    if (isTouchDevice || !("IntersectionObserver" in window)) {
       counters.forEach(formatCounterValue);
       return;
     }
@@ -103,6 +101,7 @@ if (slideshow) {
 
     counters.forEach((el) => observer.observe(el));
   });
+
   function showSlide(idx) {
     slides[current].classList.remove('active');
     dots[current] && dots[current].classList.remove('active');
