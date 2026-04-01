@@ -9,6 +9,7 @@ window.addEventListener('scroll', () => {
 // ---- Mobile hamburger ----
 const hamburger = document.querySelector('.nav__hamburger');
 const mobileMenu = document.querySelector('.nav__mobile');
+
 hamburger && hamburger.addEventListener('click', () => {
   hamburger.classList.toggle('open');
   mobileMenu && mobileMenu.classList.toggle('open');
@@ -19,6 +20,7 @@ mobileMenu && mobileMenu.querySelectorAll('a').forEach(link => {
   link.addEventListener('click', () => {
     hamburger.classList.remove('open');
     mobileMenu.classList.remove('open');
+    mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
   });
 });
 
