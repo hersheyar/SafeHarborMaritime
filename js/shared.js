@@ -69,43 +69,35 @@ if (slideshow) {
 }
 
 // ---- COUNTER ANIMATION ----
-function animateCounter(el, target, duration = 2000) {
-  const start = performance.now();
-  const isPlus = el.textContent.includes('+');
-  const isComma = target >= 1000;
-
-  function update(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const current = Math.floor(eased * target);
-
-    let display = isComma ? current.toLocaleString() : current.toString();
-    if (isPlus) display += '+';
-    el.textContent = display;
-
-    if (progress < 1) requestAnimationFrame(update);
-  }
-
-  requestAnimationFrame(update);
+function animateCounter(el) {
+  const end = parseInt(el.dataset.end, 10);
+  const suffix = el.dataset.suffix || '';
+  const duration = 2000;
+  let start = null;
+  const step = (ts) => {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 4);
+    el.textContent = Math.floor(ease * end).toLocaleString() + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
-const statsSection = document.querySelector('.stats-section');
-if (statsSection && window.innerWidth >= 1024) {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        document.querySelectorAll('.stat-number').forEach(el => {
-          const raw = el.textContent.replace(/[^0-9]/g, '');
-          const target = parseInt(raw, 10);
-          if (!isNaN(target)) animateCounter(el, target);
-        });
-        observer.disconnect();
-      }
-    });
-  }, { threshold: 0.3 });
-
-  observer.observe(statsSection);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+if (!isIOS) {
+  const counters = document.querySelectorAll('[data-counter]');
+  if (counters.length) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCounter(e.target);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(el => obs.observe(el));
+  }
 }
 
 // ---- News category filter ----

@@ -499,11 +499,6 @@ h3 { font-size: 1.25rem; font-weight: 700; }
   position: relative;
 }
 
-@media (max-width: 1023px) {
-  .stats-section {
-    display: none;
-  }
-}
 @media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 
 .stat-card {
