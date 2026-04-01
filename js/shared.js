@@ -14,18 +14,22 @@ function closeMobileMenu() {
   hamburger.classList.remove('open');
   mobileMenu.classList.remove('open');
   mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
-  // small delay so anchor navigation completes before unlocking scroll
   setTimeout(() => {
     document.body.classList.remove('menu-open');
+    document.body.style.top = '';
+    window.scrollTo(0, scrollY);
   }, 10);
 }
+
+let scrollY = 0;
 
 hamburger && hamburger.addEventListener('click', () => {
   const isOpen = mobileMenu.classList.contains('open');
   if (isOpen) {
     closeMobileMenu();
   } else {
-    closeMobileMenu();
+    scrollY = window.scrollY;
+    document.body.style.top = `-${scrollY}px`;
     hamburger.classList.add('open');
     mobileMenu.classList.add('open');
     document.body.classList.add('menu-open');
