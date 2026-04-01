@@ -6,43 +6,76 @@ window.addEventListener('scroll', () => {
   nav && (window.scrollY > 20 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled'));
 }, { passive: true });
 
-// ---- Mobile hamburger ----
-const hamburger = document.querySelector('.nav__hamburger');
-const mobileMenu = document.querySelector('.nav__mobile');
+/// ---- Mobile hamburger ----
+const hamburger = document.querySelector(".nav__hamburger");
+const mobileMenu = document.querySelector(".nav__mobile");
 
 function closeMobileMenu() {
-  hamburger.classList.remove('open');
-  mobileMenu.classList.remove('open');
-  mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
+  if (!hamburger || !mobileMenu) return;
+  hamburger.classList.remove("open");
+  mobileMenu.classList.remove("open");
+  mobileMenu.querySelectorAll("details").forEach((details) => {
+    details.removeAttribute("open");
+  });
 }
 
-hamburger && hamburger.addEventListener('click', () => {
-  const isOpen = mobileMenu.classList.contains('open');
-  if (isOpen) {
-    closeMobileMenu();
-  } else {
-    closeMobileMenu(); // reset first
-    hamburger.classList.add('open');
-    mobileMenu.classList.add('open');
-  }
-});
+function openMobileMenu() {
+  if (!hamburger || !mobileMenu) return;
+  closeMobileMenu();
+  hamburger.classList.add("open");
+  mobileMenu.classList.add("open");
+}
 
-// Close mobile menu when any link is clicked
-mobileMenu && mobileMenu.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    closeMobileMenu();
-  });
-});
-// Also close when tapping a summary that has no sub-links (direct nav)
-mobileMenu && mobileMenu.querySelectorAll('summary').forEach(summary => {
-  summary.addEventListener('click', () => {
-    // Only close if this summary's details is already open
-    const details = summary.parentElement;
-    if (details.hasAttribute('open')) {
+function handleHashNavigation(link) {
+  const href = link.getAttribute("href");
+  if (!href || !href.includes("#")) return false;
+
+  const url = new URL(link.href, window.location.origin);
+  const targetPath = url.pathname;
+  const targetHash = url.hash;
+  const currentPath = window.location.pathname;
+
+  if (!targetHash) return false;
+
+  if (targetPath === currentPath) {
+    history.replaceState(null, "", currentPath + window.location.search);
+    requestAnimationFrame(() => {
+      window.location.hash = targetHash;
+    });
+  } else {
+    window.location.href = targetPath + targetHash;
+  }
+
+  return true;
+}
+
+if (hamburger && mobileMenu) {
+  hamburger.addEventListener("click", () => {
+    const isOpen = mobileMenu.classList.contains("open");
+
+    if (isOpen) {
       closeMobileMenu();
+    } else {
+      openMobileMenu();
     }
   });
-});
+
+  mobileMenu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      closeMobileMenu();
+
+      if (handleHashNavigation(link)) {
+        event.preventDefault();
+      }
+    });
+  });
+
+  mobileMenu.querySelectorAll("summary").forEach((summary) => {
+    summary.addEventListener("click", () => {
+      closeMobileMenu();
+    });
+  });
+}
 
 // ---- Fade-in on scroll ----
 const fadeEls = document.querySelectorAll('.fade-in');
