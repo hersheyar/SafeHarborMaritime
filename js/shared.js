@@ -6,7 +6,7 @@ window.addEventListener('scroll', () => {
   nav && (window.scrollY > 20 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled'));
 }, { passive: true });
 
-// ---- Mobile hamburger ----
+/// ---- Mobile hamburger ----
 const hamburger = document.querySelector('.nav__hamburger');
 const mobileMenu = document.querySelector('.nav__mobile');
 
@@ -14,7 +14,6 @@ function closeMobileMenu() {
   hamburger.classList.remove('open');
   mobileMenu.classList.remove('open');
   mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
-  document.body.classList.remove('menu-open');
 }
 
 hamburger && hamburger.addEventListener('click', () => {
