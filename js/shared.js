@@ -71,19 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const href = link.getAttribute("href");
       closeMobileMenu();
       navigateToHref(href);
-      return;
-    }
-
-    const summary = event.target.closest("summary");
-    if (summary) {
-      event.preventDefault();
-
-      const details = summary.parentElement;
-      const firstLink = details?.querySelector("a");
-      const href = firstLink?.getAttribute("href");
-
-      closeMobileMenu();
-      navigateToHref(href);
     }
   });
 });
