@@ -68,12 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(step);
   }
 
-  const isTouchDevice =
-      window.matchMedia("(pointer: coarse)").matches ||
-      window.matchMedia("(hover: none)").matches ||
-      navigator.maxTouchPoints > 0;
+  const disableCounterAnimation = window.innerWidth <= 767;
 
-  if (isTouchDevice || !("IntersectionObserver" in window)) {
+  if (disableCounterAnimation || !("IntersectionObserver" in window)) {
     counters.forEach(formatCounterValue);
     return;
   }
