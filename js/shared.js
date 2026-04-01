@@ -13,6 +13,10 @@ const mobileMenu = document.querySelector('.nav__mobile');
 hamburger && hamburger.addEventListener('click', () => {
   hamburger.classList.toggle('open');
   mobileMenu && mobileMenu.classList.toggle('open');
+  // Reset all details when closing
+  if (!mobileMenu.classList.contains('open')) {
+    mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
+  }
 });
 
 // Close mobile menu when a link is clicked
