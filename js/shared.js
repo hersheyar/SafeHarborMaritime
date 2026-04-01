@@ -14,6 +14,14 @@ hamburger && hamburger.addEventListener('click', () => {
   mobileMenu && mobileMenu.classList.toggle('open');
 });
 
+// Close mobile menu when a link is clicked
+mobileMenu && mobileMenu.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+  });
+});
+
 // ---- Fade-in on scroll ----
 const fadeEls = document.querySelectorAll('.fade-in');
 if (fadeEls.length) {
