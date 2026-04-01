@@ -467,6 +467,8 @@ h3 { font-size: 1.25rem; font-weight: 700; }
   position: relative;
   padding: 8rem 0;
   overflow: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 .stats-section::before {
   content: '';
@@ -786,6 +788,8 @@ footer {
   background: var(--navy-deep);
   border-top: 1px solid var(--border);
   padding: 4rem 0 0;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 .footer-grid {
   display: grid;
@@ -850,7 +854,7 @@ footer {
 /* ---- FADE IN ON SCROLL ---- */
 .fade-in {
   opacity: 0;
-  transform: translateY(1.5rem);
+  transform: translateY(1rem);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 .fade-in.visible { opacity: 1; transform: none; }
