@@ -10,22 +10,29 @@ window.addEventListener('scroll', () => {
 const hamburger = document.querySelector('.nav__hamburger');
 const mobileMenu = document.querySelector('.nav__mobile');
 
+function closeMobileMenu() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
+}
+
 hamburger && hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('open');
-  mobileMenu && mobileMenu.classList.toggle('open');
-  // Reset all details when closing
-  if (!mobileMenu.classList.contains('open')) {
-    mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
+  const isOpen = mobileMenu.classList.contains('open');
+  if (isOpen) {
+    closeMobileMenu();
+  } else {
+    closeMobileMenu(); // reset first
+    hamburger.classList.add('open');
+    mobileMenu.classList.add('open');
   }
 });
 
-// Close mobile menu when a link is clicked
+// Close mobile menu when any link is clicked
 mobileMenu && mobileMenu.querySelectorAll('a').forEach(link => {
   link.addEventListener('click', () => {
     closeMobileMenu();
   });
 });
-
 // Also close when tapping a summary that has no sub-links (direct nav)
 mobileMenu && mobileMenu.querySelectorAll('summary').forEach(summary => {
   summary.addEventListener('click', () => {
