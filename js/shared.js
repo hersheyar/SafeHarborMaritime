@@ -48,6 +48,21 @@ function animateCounter(el) {
 const counters = document.querySelectorAll('[data-counter]');
 if (counters.length) {
   const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        if (window.innerWidth > 768) {
+          animateCounter(e.target);
+        }
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => obs.observe(el));
+}
+
+const counters = document.querySelectorAll('[data-counter]');
+if (counters.length) {
+  const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { animateCounter(e.target); obs.unobserve(e.target); } });
   }, { threshold: 0.5 });
   counters.forEach(el => obs.observe(el));
