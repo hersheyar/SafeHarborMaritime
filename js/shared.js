@@ -45,7 +45,9 @@ function animateCounter(el) {
   requestAnimationFrame(step);
 }
 
-if (window.innerWidth > 768) {
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+if (!isIOS) {
   const counters = document.querySelectorAll('[data-counter]');
   if (counters.length) {
     const obs = new IntersectionObserver(entries => {
