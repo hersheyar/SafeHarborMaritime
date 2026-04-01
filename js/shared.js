@@ -30,44 +30,56 @@ document.querySelectorAll('.nav__links a, .nav__dropdown a').forEach(a => {
 });
 
 // ---- Animated counters (TrustSection) ----
+function formatCounterValue(el) {
+  const end = parseInt(el.dataset.end || "0", 10);
+  const suffix = el.dataset.suffix || "";
+  el.textContent = end.toLocaleString() + suffix;
+}
+
 function animateCounter(el) {
-  const end = parseInt(el.dataset.end, 10);
-  const suffix = el.dataset.suffix || '';
+  if (el.dataset.animated === "true") return;
+  el.dataset.animated = "true";
+  const end = parseInt(el.dataset.end || "0", 10);
+  const suffix = el.dataset.suffix || "";
   const duration = 2000;
   let start = null;
   const step = (ts) => {
     if (!start) start = ts;
-    const p = Math.min((ts - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - p, 4);
+    const progress = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 4);
     el.textContent = Math.floor(ease * end).toLocaleString() + suffix;
-    if (p < 1) requestAnimationFrame(step);
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      formatCounterValue(el);
+    }
   };
   requestAnimationFrame(step);
 }
 
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const counters = document.querySelectorAll("[data-counter]");
+const disableCounterAnimation =
+    window.matchMedia("(max-width: 768px)").matches ||
+    window.matchMedia("(pointer: coarse)").matches ||
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-if (!isIOS) {
-  const counters = document.querySelectorAll('[data-counter]');
-  if (counters.length) {
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          animateCounter(e.target);
-          obs.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.5 });
-    counters.forEach(el => obs.observe(el));
-  }
-}
-
-const counters = document.querySelectorAll('[data-counter]');
 if (counters.length) {
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { animateCounter(e.target); obs.unobserve(e.target); } });
-  }, { threshold: 0.5 });
-  counters.forEach(el => obs.observe(el));
+  if (disableCounterAnimation) {
+    counters.forEach(formatCounterValue);
+  } else {
+    const observer = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateCounter(entry.target);
+              obs.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.5 }
+    );
+    counters.forEach((el) => observer.observe(el));
+  }
 }
 
 // ---- Slideshow ----
