@@ -6,53 +6,57 @@ window.addEventListener('scroll', () => {
   nav && (window.scrollY > 20 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled'));
 }, { passive: true });
 
-/// ---- Mobile hamburger ----
-const hamburger = document.querySelector(".nav__hamburger");
-const mobileMenu = document.querySelector(".nav__mobile");
+// ---- Mobile hamburger ----
+document.addEventListener("DOMContentLoaded", () => {
+  const hamburger = document.querySelector(".nav__hamburger");
+  const mobileMenu = document.querySelector(".nav__mobile");
 
-function closeMobileMenu() {
   if (!hamburger || !mobileMenu) return;
-  hamburger.classList.remove("open");
-  mobileMenu.classList.remove("open");
-  mobileMenu.querySelectorAll("details").forEach((details) => {
-    details.removeAttribute("open");
-  });
-}
 
-function openMobileMenu() {
-  if (!hamburger || !mobileMenu) return;
-  closeMobileMenu();
-  hamburger.classList.add("open");
-  mobileMenu.classList.add("open");
-}
-
-function handleHashNavigation(link) {
-  const href = link.getAttribute("href");
-  if (!href || !href.includes("#")) return false;
-
-  const url = new URL(link.href, window.location.origin);
-  const targetPath = url.pathname;
-  const targetHash = url.hash;
-  const currentPath = window.location.pathname;
-
-  if (!targetHash) return false;
-
-  if (targetPath === currentPath) {
-    history.replaceState(null, "", currentPath + window.location.search);
-    requestAnimationFrame(() => {
-      window.location.hash = targetHash;
+  function closeMobileMenu() {
+    hamburger.classList.remove("open");
+    mobileMenu.classList.remove("open");
+    mobileMenu.querySelectorAll("details").forEach((details) => {
+      details.removeAttribute("open");
     });
-  } else {
-    window.location.href = targetPath + targetHash;
   }
 
-  return true;
-}
+  function openMobileMenu() {
+    closeMobileMenu();
+    hamburger.classList.add("open");
+    mobileMenu.classList.add("open");
+  }
 
-if (hamburger && mobileMenu) {
+  function navigateToHref(href) {
+    if (!href) return;
+
+    const url = new URL(href, window.location.href);
+    const samePage =
+        url.pathname === window.location.pathname &&
+        url.origin === window.location.origin;
+
+    if (url.hash && samePage) {
+      const target = document.querySelector(url.hash);
+
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+
+      requestAnimationFrame(() => {
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", url.pathname + url.hash);
+        } else {
+          window.location.href = url.pathname + url.hash;
+        }
+      });
+
+      return;
+    }
+
+    window.location.href = url.pathname + url.search + url.hash;
+  }
+
   hamburger.addEventListener("click", () => {
     const isOpen = mobileMenu.classList.contains("open");
-
     if (isOpen) {
       closeMobileMenu();
     } else {
@@ -60,22 +64,29 @@ if (hamburger && mobileMenu) {
     }
   });
 
-  mobileMenu.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", (event) => {
+  mobileMenu.addEventListener("click", (event) => {
+    const link = event.target.closest("a");
+    if (link) {
+      event.preventDefault();
+      const href = link.getAttribute("href");
       closeMobileMenu();
+      navigateToHref(href);
+      return;
+    }
 
-      if (handleHashNavigation(link)) {
-        event.preventDefault();
-      }
-    });
-  });
+    const summary = event.target.closest("summary");
+    if (summary) {
+      event.preventDefault();
 
-  mobileMenu.querySelectorAll("summary").forEach((summary) => {
-    summary.addEventListener("click", () => {
+      const details = summary.parentElement;
+      const firstLink = details?.querySelector("a");
+      const href = firstLink?.getAttribute("href");
+
       closeMobileMenu();
-    });
+      navigateToHref(href);
+    }
   });
-}
+});
 
 // ---- Fade-in on scroll ----
 const fadeEls = document.querySelectorAll('.fade-in');
