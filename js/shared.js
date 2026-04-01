@@ -7,74 +7,31 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 // ---- Mobile hamburger ----
-document.addEventListener("DOMContentLoaded", () => {
-  const hamburger = document.querySelector(".nav__hamburger");
-  const mobileMenu = document.querySelector(".nav__mobile");
+const hamburger = document.querySelector('.nav__hamburger');
+const mobileMenu = document.querySelector('.nav__mobile');
 
-  if (!hamburger || !mobileMenu) return;
+function closeMobileMenu() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
+}
 
-  function closeMobileMenu() {
-    hamburger.classList.remove("open");
-    mobileMenu.classList.remove("open");
-    mobileMenu.querySelectorAll("details").forEach((details) => {
-      details.removeAttribute("open");
-    });
-  }
-
-  function openMobileMenu() {
+hamburger && hamburger.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.contains('open');
+  if (isOpen) {
     closeMobileMenu();
-    hamburger.classList.add("open");
-    mobileMenu.classList.add("open");
+  } else {
+    closeMobileMenu();
+    hamburger.classList.add('open');
+    mobileMenu.classList.add('open');
   }
-
-  function navigateToHref(href) {
-    if (!href) return;
-
-    const url = new URL(href, window.location.href);
-    const samePage =
-        url.pathname === window.location.pathname &&
-        url.origin === window.location.origin;
-
-    if (url.hash && samePage) {
-      const target = document.querySelector(url.hash);
-
-      history.replaceState(null, "", window.location.pathname + window.location.search);
-
-      requestAnimationFrame(() => {
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-          history.replaceState(null, "", url.pathname + url.hash);
-        } else {
-          window.location.href = url.pathname + url.hash;
-        }
-      });
-
-      return;
-    }
-
-    window.location.href = url.pathname + url.search + url.hash;
-  }
-
-  hamburger.addEventListener("click", () => {
-    const isOpen = mobileMenu.classList.contains("open");
-    if (isOpen) {
-      closeMobileMenu();
-    } else {
-      openMobileMenu();
-    }
-  });
-
-  mobileMenu.addEventListener("click", (event) => {
-    const link = event.target.closest("a");
-    if (link) {
-      event.preventDefault();
-      const href = link.getAttribute("href");
-      closeMobileMenu();
-      navigateToHref(href);
-    }
-  });
 });
 
+mobileMenu && mobileMenu.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    closeMobileMenu();
+  });
+});
 // ---- Fade-in on scroll ----
 const fadeEls = document.querySelectorAll('.fade-in');
 if (fadeEls.length) {
