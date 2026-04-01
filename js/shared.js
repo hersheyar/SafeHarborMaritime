@@ -6,6 +6,10 @@ window.addEventListener('scroll', () => {
   nav && (window.scrollY > 20 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled'));
 }, { passive: true });
 
+// reset body scroll state on page load
+document.body.style.top = '';
+document.body.classList.remove('menu-open');
+
 /// ---- Mobile hamburger ----
 const hamburger = document.querySelector('.nav__hamburger');
 const mobileMenu = document.querySelector('.nav__mobile');
