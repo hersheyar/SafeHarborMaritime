@@ -14,6 +14,7 @@ function closeMobileMenu() {
   hamburger.classList.remove('open');
   mobileMenu.classList.remove('open');
   mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
+  document.body.classList.remove('menu-open');
 }
 
 hamburger && hamburger.addEventListener('click', () => {
@@ -24,6 +25,7 @@ hamburger && hamburger.addEventListener('click', () => {
     closeMobileMenu();
     hamburger.classList.add('open');
     mobileMenu.classList.add('open');
+    document.body.classList.add('menu-open');
   }
 });
 
@@ -32,6 +34,7 @@ mobileMenu && mobileMenu.querySelectorAll('a').forEach(link => {
     closeMobileMenu();
   });
 });
+
 // ---- Fade-in on scroll ----
 const fadeEls = document.querySelectorAll('.fade-in');
 if (fadeEls.length) {
