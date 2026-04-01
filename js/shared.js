@@ -14,6 +14,10 @@ function closeMobileMenu() {
   hamburger.classList.remove('open');
   mobileMenu.classList.remove('open');
   mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
+  // small delay so anchor navigation completes before unlocking scroll
+  setTimeout(() => {
+    document.body.classList.remove('menu-open');
+  }, 10);
 }
 
 hamburger && hamburger.addEventListener('click', () => {
