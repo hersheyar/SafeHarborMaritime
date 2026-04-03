@@ -10,22 +10,45 @@ window.addEventListener('scroll', () => {
 document.body.style.top = '';
 document.body.classList.remove('menu-open');
 
-/// ---- Mobile hamburger ----
+// ---- Mobile hamburger ----
 const hamburger = document.querySelector('.nav__hamburger');
 const mobileMenu = document.querySelector('.nav__mobile');
 
-function closeMobileMenu() {
+let scrollY = 0;
+
+function closeMobileMenu(targetHref) {
   hamburger.classList.remove('open');
   mobileMenu.classList.remove('open');
   mobileMenu.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
-  setTimeout(() => {
-    document.body.classList.remove('menu-open');
-    document.body.style.top = '';
-    window.scrollTo(0, scrollY);
-  }, 10);
-}
 
-let scrollY = 0;
+  // Remove the body lock and restore scroll position
+  document.body.classList.remove('menu-open');
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  window.scrollTo(0, scrollY);
+
+  // If the link has a hash target on the same page, manually scroll to it
+  // after the body lock is released (next frame)
+  if (targetHref) {
+    const hash = targetHref.includes('#') ? '#' + targetHref.split('#')[1] : null;
+    const isSamePage = !targetHref.includes('.html') ||
+        targetHref.split('#')[0] === (window.location.pathname.split('/').pop() || 'index.html');
+
+    if (hash && isSamePage) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const target = document.querySelector(hash);
+          if (target) {
+            const offset = 80; // nav height
+            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        });
+      });
+    }
+  }
+}
 
 hamburger && hamburger.addEventListener('click', () => {
   const isOpen = mobileMenu.classList.contains('open');
@@ -33,7 +56,9 @@ hamburger && hamburger.addEventListener('click', () => {
     closeMobileMenu();
   } else {
     scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
     hamburger.classList.add('open');
     mobileMenu.classList.add('open');
     document.body.classList.add('menu-open');
@@ -41,8 +66,23 @@ hamburger && hamburger.addEventListener('click', () => {
 });
 
 mobileMenu && mobileMenu.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    closeMobileMenu();
+  link.addEventListener('click', (e) => {
+    const href = link.getAttribute('href');
+
+    // Check if this is a same-page anchor (e.g. index.html#section or just #section)
+    const hash = href && href.includes('#') ? '#' + href.split('#')[1] : null;
+    const linkPage = href && href.includes('.html') ? href.split('#')[0] : null;
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const isSamePage = !linkPage || linkPage === currentPage;
+
+    if (hash && isSamePage) {
+      // Prevent default anchor jump — we'll handle scrolling manually after unlock
+      e.preventDefault();
+      closeMobileMenu(href);
+    } else {
+      // Cross-page navigation: just close the menu, let browser navigate
+      closeMobileMenu();
+    }
   });
 });
 
@@ -60,6 +100,7 @@ const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 document.querySelectorAll('.nav__links a, .nav__dropdown a').forEach(a => {
   if (a.getAttribute('href') === currentPage) a.classList.add('active');
 });
+
 // ---- Slideshow ----
 const slideshow = document.querySelector('.slideshow');
 if (slideshow) {
