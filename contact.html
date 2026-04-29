@@ -58,29 +58,68 @@
         <form id="contact-form" novalidate>
           <div class="form-row">
             <div class="form-group">
-              <label for="name">Full Name <span aria-hidden="true">*</span></label>
-              <input type="text" id="name" name="name" placeholder="John Smith" required autocomplete="name" />
+              <label for="firstname">First Name <span aria-hidden="true">*</span></label>
+              <input type="text" id="firstname" name="firstname" placeholder="John" required autocomplete="given-name" />
+            </div>
+            <div class="form-group">
+              <label for="lastname">Last Name <span aria-hidden="true">*</span></label>
+              <input type="text" id="lastname" name="lastname" placeholder="Smith" required autocomplete="family-name" />
             </div>
             <div class="form-group">
               <label for="email">Email Address <span aria-hidden="true">*</span></label>
               <input type="email" id="email" name="email" placeholder="john@company.com" required autocomplete="email" />
             </div>
             <div class="form-group">
-              <label for="company">Company / Organization</label>
+              <label for="phone">Phone Number <span aria-hidden="true">*</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" required autocomplete="tel" />
+            </div>
+            <div class="form-group">
+              <label for="company">Organization / Company</label>
               <input type="text" id="company" name="company" placeholder="Company name" autocomplete="organization" />
             </div>
             <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" autocomplete="tel" />
+              <label for="jobtitle">Title / Role</label>
+              <input type="text" id="jobtitle" name="jobtitle" placeholder="Your title or role" autocomplete="organization-title" />
             </div>
           </div>
           <div class="form-group" style="margin-bottom:1.5rem;">
-            <label for="subject">Subject <span aria-hidden="true">*</span></label>
-            <input type="text" id="subject" name="subject" placeholder="How can we help?" required />
+            <label for="sector">What sector best describes your organization?</label>
+            <select id="sector" name="sector">
+              <option value="">Select a sector</option>
+              <option value="U.S. Navy / DoD">U.S. Navy / DoD</option>
+              <option value="Defense Contractor">Defense Contractor</option>
+              <option value="Federal Agency (Non-DoD)">Federal Agency (Non-DoD)</option>
+              <option value="Commercial Maritime">Commercial Maritime</option>
+              <option value="Research / Academic">Research / Academic</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:1.5rem;">
+            <label for="how_did_you_hear">How did you hear about us?</label>
+            <select id="how_did_you_hear" name="how_did_you_hear">
+              <option value="">Select an option</option>
+              <option value="Referral">Referral</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Industry Event / Conference">Industry Event / Conference</option>
+              <option value="Web Search">Web Search</option>
+              <option value="TMA BlueTech">TMA BlueTech</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:1.5rem;">
+            <label for="capability">What capability are you interested in?</label>
+            <select id="capability" name="capability">
+              <option value="">Select a capability</option>
+              <option value="Scalable Maritime Security">Scalable Maritime Security</option>
+              <option value="Support Services">Support Services</option>
+              <option value="USV Leasing / Rapid Deploy UxS">USV Leasing / Rapid Deploy UxS</option>
+              <option value="UMS Training">UMS Training</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
           <div class="form-group" style="margin-bottom:2rem;">
-            <label for="message">Message <span aria-hidden="true">*</span></label>
-            <textarea id="message" name="message" placeholder="Tell us about your mission requirements..." required rows="6"></textarea>
+            <label for="message">Tell us about your mission or project</label>
+            <textarea id="message" name="message" placeholder="Tell us about your mission requirements..." rows="6"></textarea>
           </div>
           <button type="submit" class="btn btn-primary">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -159,30 +198,27 @@
 
   document.getElementById('contact-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-
     const form = e.target;
     const btn = form.querySelector('button[type="submit"]');
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
-    // Split name into first/last for HubSpot
-    const fullName = form.querySelector('[name="name"]').value.trim().split(' ');
-    const firstname = fullName[0] || '';
-    const lastname = fullName.slice(1).join(' ') || '';
-
     try {
-      const res = await fetch('https://api.hsforms.com/submissions/v3/integration/submit/245741058/b129faad-f2e6-4cf1-a631-97690dbbc2ac', {
+      const res = await fetch('https://api.hsforms.com/submissions/v3/integration/submit/245110435/7bef2278-a93d-442e-b70f-0fae2132ca1d', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fields: [
-            { name: 'firstname', value: firstname },
-            { name: 'lastname', value: lastname },
-            { name: 'email', value: form.querySelector('[name="email"]').value },
-            { name: 'company', value: form.querySelector('[name="company"]').value },
-            { name: 'phone', value: form.querySelector('[name="phone"]').value },
-            { name: 'subject', value: form.querySelector('[name="subject"]').value },
-            { name: 'message', value: form.querySelector('[name="message"]').value }
+            { name: 'firstname',      value: form.querySelector('[name="firstname"]').value },
+            { name: 'lastname',       value: form.querySelector('[name="lastname"]').value },
+            { name: 'email',          value: form.querySelector('[name="email"]').value },
+            { name: 'phone',          value: form.querySelector('[name="phone"]').value },
+            { name: 'company',        value: form.querySelector('[name="company"]').value },
+            { name: 'jobtitle',       value: form.querySelector('[name="jobtitle"]').value },
+            { name: 'sector',         value: form.querySelector('[name="sector"]').value },
+            { name: 'how_did_you_hear', value: form.querySelector('[name="how_did_you_hear"]').value },
+            { name: 'capability',     value: form.querySelector('[name="capability"]').value },
+            { name: 'message',        value: form.querySelector('[name="message"]').value }
           ]
         })
       });
@@ -193,15 +229,15 @@
       } else {
         const err = await res.json();
         console.error('HubSpot error:', err);
-        alert('Something went wrong. Please try again.');
         btn.textContent = 'Send Message';
         btn.disabled = false;
+        alert('Something went wrong. Please try again.');
       }
     } catch (err) {
       console.error(err);
-      alert('Something went wrong. Please try again.');
       btn.textContent = 'Send Message';
       btn.disabled = false;
+      alert('Something went wrong. Please try again.');
     }
   });
 </script>
